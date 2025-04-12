@@ -37,3 +37,6 @@ yarn-error.*
 
 # VS code
 .history
+
+# misc
+.documentation
