@@ -1,4 +1,5 @@
 // .vscode/settings.json
 {
-  "eslint.experimental.useFlatConfig": true
+  "eslint.experimental.useFlatConfig": true,
+  "editor.tabSize": 2
 }
