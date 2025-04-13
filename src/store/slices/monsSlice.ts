@@ -1,7 +1,7 @@
 // src/store/slices/monsSlice.ts
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Mon, EvolutionStage, MonState, CareEventType } from '../../types';
+import { Mon, EvolutionStage, MonState, CareEventType } from '../../types/mon';
 
 /**
  * Interface representing the mons state
@@ -140,9 +140,32 @@ const monsSlice = createSlice({
         });
       }
     },
+
+    /**
+     * Updates multiple mons after time-based event processing
+     * Applies changes from the time event processor
+     * @param updatedMons - Dictionary of updated mons
+     */
+    updateMonsFromTimeEvents: (state, action: PayloadAction<Record<string, Mon>>) => {
+      const updatedMons = action.payload;
+
+      // Apply updates to each mon
+      Object.keys(updatedMons).forEach(monId => {
+        if (state.entities[monId]) {
+          state.entities[monId] = updatedMons[monId];
+        }
+      });
+    },
   },
 });
 
 // Export actions and reducer
-export const { createMon, setActiveMon, updateMonState, feedMon, cleanMon } = monsSlice.actions;
+export const {
+  createMon,
+  setActiveMon,
+  updateMonState,
+  feedMon,
+  cleanMon,
+  updateMonsFromTimeEvents,
+} = monsSlice.actions;
 export default monsSlice.reducer;

@@ -9,6 +9,7 @@ import { combineReducers } from 'redux';
 import timeReducer from './slices/timeSlice';
 import monsReducer from './slices/monsSlice';
 import settingsReducer from './slices/settingsSlice';
+import authReducer from './slices/authSlice';
 
 /**
  * Persistence configuration for Redux store
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
   time: timeReducer, // Manages time-related state
   mons: monsReducer, // Manages virtual pet entities
   settings: settingsReducer, // Manages user settings
+  auth: authReducer, // Manages authentication
 });
 
 /**
