@@ -6,6 +6,8 @@ import { Mon, EvolutionStage, MonState } from '../../types/mon';
 import { evolutionService } from '../../services/game/evolutionService';
 import { lifecycleService } from '../../services/game/lifecycleService';
 import { careService } from '@/services/game/careService';
+import { trainingService } from '@/services/game/trainingService';
+
 /**
  * Interface representing the mons state
  * Manages all virtual pet entities and their state
@@ -234,6 +236,25 @@ const monsSlice = createSlice({
       }
     },
 
+    /**
+     * Applies training results to a mon
+     * Updates BP and records training event
+     * @param id - ID of the mon that was trained
+     * @param gameId - ID of the training game played
+     * @param score - Score achieved in the game
+     */
+    applyTraining: (
+      state,
+      action: PayloadAction<{ id: string; gameId: string; score: number }>,
+    ) => {
+      const { id, gameId, score } = action.payload;
+      if (state.entities[id]) {
+        const mon = state.entities[id];
+        const updatedMon = trainingService.applyTrainingResult(mon, gameId, score);
+        state.entities[id] = updatedMon;
+      }
+    },
+
     // Don't forget to update the exported actions:
   },
 });
@@ -250,5 +271,6 @@ export const {
   updateLifecycle,
   healMon,
   toggleSleepMon,
+  applyTraining,
 } = monsSlice.actions;
 export default monsSlice.reducer;
