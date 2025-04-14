@@ -3,6 +3,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Mon, EvolutionStage, MonState, CareEventType } from '../../types/mon';
 
+import { evolutionService } from '../../services/game/evolutionService';
+import { lifecycleService } from '../../services/game/lifecycleService';
 /**
  * Interface representing the mons state
  * Manages all virtual pet entities and their state
@@ -156,6 +158,60 @@ const monsSlice = createSlice({
         }
       });
     },
+    /**
+     * Checks a mon for evolution eligibility
+     * If eligible, evolves the mon to the next stage
+     * @param id - ID of the mon to check
+     */
+    checkEvolution: (state, action: PayloadAction<string>) => {
+      const id = action.payload;
+      if (state.entities[id]) {
+        const mon = state.entities[id];
+
+        // Skip if dead
+        if (mon.state === MonState.DEAD) {
+          return;
+        }
+
+        // Check for evolution eligibility
+        const eligiblePath = evolutionService.checkEligibility(mon);
+
+        if (eligiblePath) {
+          // Evolve the mon
+          state.entities[id] = evolutionService.evolveMon(mon, eligiblePath);
+        }
+      }
+    },
+
+    /**
+     * Updates a mon's age and checks for death
+     * @param id - ID of the mon to update
+     */
+    updateLifecycle: (state, action: PayloadAction<string>) => {
+      const id = action.payload;
+      if (state.entities[id]) {
+        let mon = state.entities[id];
+
+        // Skip if already dead
+        if (mon.state === MonState.DEAD) {
+          return;
+        }
+
+        // Update age
+        mon = lifecycleService.updateAge(mon);
+
+        // Check for death
+        const deathCheck = lifecycleService.checkDeath(mon);
+        if (deathCheck && deathCheck.isDead) {
+          mon = lifecycleService.processDeath(mon, deathCheck.cause);
+        }
+
+        // Update mon in state
+        state.entities[id] = mon;
+      }
+    },
+
+    // Don't forget to update the exported actions:
   },
 });
 
@@ -167,5 +223,7 @@ export const {
   feedMon,
   cleanMon,
   updateMonsFromTimeEvents,
+  checkEvolution,
+  updateLifecycle,
 } = monsSlice.actions;
 export default monsSlice.reducer;

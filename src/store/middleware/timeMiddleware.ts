@@ -2,7 +2,7 @@
 
 import { Middleware } from '@reduxjs/toolkit';
 import { timeUpdate } from '../slices/timeSlice';
-import { updateMonsFromTimeEvents } from '../slices/monsSlice';
+import { updateMonsFromTimeEvents, updateLifecycle, checkEvolution } from '../slices/monsSlice';
 import { timeEventProcessor } from '../../services/time/timeEventProcessor';
 import { Mon } from '../../types/mon';
 
@@ -49,6 +49,14 @@ const timeMiddleware: Middleware = api => next => (action: any) => {
         currentTime,
       }),
     );
+    // Process lifecycle updates for all mons
+    Object.keys(mons).forEach(monId => {
+      // Update lifecycle (age, death check)
+      api.dispatch(updateLifecycle(monId));
+
+      // Check for evolution
+      api.dispatch(checkEvolution(monId));
+    });
   }
 
   return result;
