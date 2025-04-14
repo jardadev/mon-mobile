@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const STORAGE_KEYS = {
   MONS: 'virtual-pet-game:mons', // Key for storing all pet entities
   SETTINGS: 'virtual-pet-game:settings', // Key for storing user settings
-  GAME_STATE: 'virtual-pet-game:gameState', // Key for storing overall game state
+  USER: 'virtual-pet-game:user',
 };
 
 /**

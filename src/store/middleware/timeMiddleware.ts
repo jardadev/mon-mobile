@@ -1,6 +1,10 @@
 // src/store/middleware/timeMiddleware.ts
+
 import { Middleware } from '@reduxjs/toolkit';
 import { timeUpdate } from '../slices/timeSlice';
+import { updateMonsFromTimeEvents } from '../slices/monsSlice';
+import { timeEventProcessor } from '../../services/time/timeEventProcessor';
+import { Mon } from '../../types/mon';
 
 /**
  * Time management middleware for Redux
@@ -22,6 +26,20 @@ const timeMiddleware: Middleware = api => next => (action: any) => {
     // Skip if elapsed time is very small
     if (elapsedMs < 1000) {
       return result;
+    }
+
+    // Process time events for all mons
+    const mons = state.mons.entities;
+    const updatedMons: Record<string, Mon> = {};
+
+    // Process each mon's time-based events
+    Object.keys(mons).forEach(monId => {
+      updatedMons[monId] = timeEventProcessor.processTimeEvents(mons[monId], elapsedMs);
+    });
+
+    // Dispatch actions to update mons if there are any
+    if (Object.keys(updatedMons).length > 0) {
+      api.dispatch(updateMonsFromTimeEvents(updatedMons));
     }
 
     // Dispatch time update action

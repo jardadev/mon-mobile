@@ -10,7 +10,6 @@ import { authService } from '../../services/auth/authService';
 interface User {
   id: string;
   username: string;
-  email?: string;
   createdAt: number;
   lastLoginAt: number;
 }

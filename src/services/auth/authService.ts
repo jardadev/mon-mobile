@@ -1,11 +1,5 @@
 // src/services/auth/authService.ts
 
-/**
- * Auth Service
- * Handles user authentication operations
- * Currently uses a simple local storage approach for user data
- */
-
 import { storageService, STORAGE_KEYS } from '../storage/storageService';
 
 /**
@@ -15,7 +9,6 @@ import { storageService, STORAGE_KEYS } from '../storage/storageService';
 interface User {
   id: string;
   username: string;
-  email?: string;
   createdAt: number;
   lastLoginAt: number;
 }
@@ -23,6 +16,7 @@ interface User {
 /**
  * Auth service
  * Provides methods for user authentication and management
+ * Uses local storage for simplicity in this version
  */
 export const authService = {
   /**
@@ -121,38 +115,6 @@ export const authService = {
   },
 
   /**
-   * Update user profile
-   * Modifies the current user's profile data
-   *
-   * @param updates - Object with properties to update
-   * @returns Promise resolving to the updated user
-   */
-  updateUserProfile: async (updates: Partial<User>): Promise<User> => {
-    // Get current user
-    const currentUser = await authService.getCurrentUser();
-
-    if (!currentUser) {
-      throw new Error('No user signed in');
-    }
-
-    // Create updated user
-    const updatedUser: User = {
-      ...currentUser,
-      ...updates,
-      id: currentUser.id, // Prevent ID change
-      createdAt: currentUser.createdAt, // Prevent creation date change
-    };
-
-    // Save updated user
-    await storageService.saveData(STORAGE_KEYS.USER, updatedUser);
-
-    // Update cached user
-    authService.currentUser = updatedUser;
-
-    return updatedUser;
-  },
-
-  /**
    * Sign out
    * Clears the current user session
    *
@@ -162,18 +124,7 @@ export const authService = {
     // Clear cached user
     authService.currentUser = null;
 
-    // Optional: Keep user data in storage but clear session indicators
-    // or remove user data completely:
-    // await storageService.removeData(STORAGE_KEYS.USER);
-  },
-
-  /**
-   * Check if user is signed in
-   * Fast synchronous check for user authentication status
-   *
-   * @returns True if a user is signed in, false otherwise
-   */
-  isSignedIn: (): boolean => {
-    return authService.currentUser !== null;
+    // Remove user data from storage
+    await storageService.removeData(STORAGE_KEYS.USER);
   },
 };
