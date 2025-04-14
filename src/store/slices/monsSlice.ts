@@ -1,10 +1,11 @@
 // src/store/slices/monsSlice.ts
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Mon, EvolutionStage, MonState, CareEventType } from '../../types/mon';
+import { Mon, EvolutionStage, MonState } from '../../types/mon';
 
 import { evolutionService } from '../../services/game/evolutionService';
 import { lifecycleService } from '../../services/game/lifecycleService';
+import { careService } from '@/services/game/careService';
 /**
  * Interface representing the mons state
  * Manages all virtual pet entities and their state
@@ -106,18 +107,11 @@ const monsSlice = createSlice({
       const id = action.payload;
       if (state.entities[id]) {
         const mon = state.entities[id];
-        // Increase hunger level (max 3)
-        mon.stats.hunger = Math.min(3, mon.stats.hunger + 1);
-        // Increase weight
-        mon.stats.weight += 2;
-        // Update timestamp
-        mon.lastUpdated = Date.now();
+        const result = careService.feedMon(mon);
 
-        // Record care event
-        mon.careHistory.push({
-          timestamp: Date.now(),
-          type: CareEventType.FEED,
-        });
+        if (result.success) {
+          state.entities[id] = result.updatedMon;
+        }
       }
     },
 
@@ -130,16 +124,45 @@ const monsSlice = createSlice({
       const id = action.payload;
       if (state.entities[id]) {
         const mon = state.entities[id];
-        // Reset poop count
-        mon.stats.poopCount = 0;
-        // Update timestamp
-        mon.lastUpdated = Date.now();
+        const result = careService.cleanMon(mon);
 
-        // Record care event
-        mon.careHistory.push({
-          timestamp: Date.now(),
-          type: CareEventType.CLEAN,
-        });
+        if (result.success) {
+          state.entities[id] = result.updatedMon;
+        }
+      }
+    },
+
+    /**
+     * Heals a mon from sickness or injury
+     * Changes state to normal and records healing event
+     * @param id - ID of the mon to heal
+     */
+    healMon: (state, action: PayloadAction<string>) => {
+      const id = action.payload;
+      if (state.entities[id]) {
+        const mon = state.entities[id];
+        const result = careService.healMon(mon);
+
+        if (result.success) {
+          state.entities[id] = result.updatedMon;
+        }
+      }
+    },
+
+    /**
+     * Toggles a mon's sleep state
+     * Records sleep start/end event
+     * @param id - ID of the mon to toggle sleep for
+     */
+    toggleSleepMon: (state, action: PayloadAction<string>) => {
+      const id = action.payload;
+      if (state.entities[id]) {
+        const mon = state.entities[id];
+        const result = careService.toggleSleep(mon);
+
+        if (result.success) {
+          state.entities[id] = result.updatedMon;
+        }
       }
     },
 
@@ -225,5 +248,7 @@ export const {
   updateMonsFromTimeEvents,
   checkEvolution,
   updateLifecycle,
+  healMon,
+  toggleSleepMon,
 } = monsSlice.actions;
 export default monsSlice.reducer;
