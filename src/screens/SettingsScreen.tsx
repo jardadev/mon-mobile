@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { useAppDispatch } from '../store/hooks';
 import { RootState } from '../store';
 import { toggleNotifications, toggleSound } from '../store/slices/settingsSlice';
 import { signOut } from '../store/slices/authSlice';
@@ -16,7 +17,7 @@ import { theme } from '../components/ui/theme';
  * Allows the user to configure app settings
  */
 const SettingsScreen: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const settings = useSelector((state: RootState) => state.settings);
   const user = useSelector((state: RootState) => state.auth.user);
 
