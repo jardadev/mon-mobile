@@ -1,35 +1,28 @@
 // src/App.tsx
+
 import React from 'react';
-import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from './store';
+import RootNavigator from './navigation/RootNavigator';
 
-export default function App() {
+/**
+ * Main App component
+ * Sets up providers and root navigation
+ */
+const App: React.FC = () => {
   return (
-    <SafeAreaProvider>
-      <View style={styles.container}>
-        <Text style={styles.title}>Virtual Pet Game</Text>
-        <Text style={styles.subtitle}>Development in progress...</Text>
-        <StatusBar style="auto" />
-      </View>
-    </SafeAreaProvider>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <SafeAreaProvider>
+          <StatusBar style="light" />
+          <RootNavigator />
+        </SafeAreaProvider>
+      </PersistGate>
+    </Provider>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-  },
-});
+export default App;

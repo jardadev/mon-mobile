@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ToastAndroid } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { feedMon, cleanMon, healMon, toggleSleepMon } from '../store/slices/monsSlice';
 import { createMon } from '../store/slices/monsSlice';
@@ -13,13 +13,14 @@ import { StatBar } from '../components/mon/StatBar';
 import { CareActions } from '../components/mon/CareActions';
 import { theme } from '../components/ui/theme';
 import { MonState } from '../types/mon';
+import { useAppDispatch } from '@/store/hooks';
 
 /**
  * Home screen
  * Main screen for interacting with the active mon
  */
 const HomeScreen: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { entities, activeMon } = useSelector((state: RootState) => state.mons);
   const { user } = useSelector((state: RootState) => state.auth);
 
