@@ -9,6 +9,7 @@ import { combineReducers } from 'redux';
 import timeReducer from './slices/timeSlice';
 import monsReducer from './slices/monsSlice';
 import settingsReducer from './slices/settingsSlice';
+import authReducer from './slices/authSlice';
 
 // Import middleware
 import timeMiddleware from './middleware/timeMiddleware';
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
   time: timeReducer,
   mons: monsReducer,
   settings: settingsReducer,
+  auth: authReducer,
 });
 
 /**
